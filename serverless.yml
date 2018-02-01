@@ -1,0 +1,35 @@
+service: serverless-kakao-bot
+
+frameworkVersion: "=1.26.0"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: ap-northeast-2
+  stage: ${opt:stage, 'prod'}
+  profile: admin
+
+custom:
+  customDomain: 
+    domainName: api.vulldozer.com
+    basePath: ""
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+
+functions:
+  keyboard:
+    handler: api/keyboard.main
+    memorySize: 128
+    description: Initializing endpoint for Kakao REST API
+    events:
+      - http: GET keyboard
+  message:
+    handler: api/message.main
+    memorySize: 128
+    description: Answering API for Receiving Kakao Messages
+    events:
+      - http: POST message
+
+plugins:
+  - serverless-webpack
+  - serverless-domain-manager
